@@ -12,6 +12,10 @@ interface BaseFieldConfig {
     placeholder?: string;
 }
 
+/**
+ * A builder class for creating form field configurations.
+ * @template T - The type of the form data object.
+ */
 export class FormFieldBuilder<T extends object> {
     private createField(
         config: Omit<FormItemProps<T>, 'children'> & {
@@ -28,7 +32,12 @@ export class FormFieldBuilder<T extends object> {
         };
     }
 
-    createTextField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T, initialValue?: any }) {
+    /**
+     * Creates a text input field configuration.
+     * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T, initialValue?: any }} config - The field configuration.
+     * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+     */
+    createTextField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T, initialValue?: any }): FormItemProps<T> & { render: () => React.ReactNode; } {
         const rules: Rule[] = [];
         if (config.required) {
             rules.push(this.createRequiredRule());
@@ -52,7 +61,12 @@ export class FormFieldBuilder<T extends object> {
         });
     }
 
-    createAmountField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T, initialValue?: any }) {
+    /**
+     * Creates an amount input field configuration.
+     * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T, initialValue?: any }} config - The field configuration.
+     * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+     */
+    createAmountField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T, initialValue?: any }): FormItemProps<T> & { render: () => React.ReactNode; } {
         const rules: Rule[] = [];
         if (config.required) {
             rules.push(this.createRequiredRule());
@@ -76,7 +90,12 @@ export class FormFieldBuilder<T extends object> {
         });
     }
 
-    createTextAreaField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T, rows?: number }) {
+    /**
+     * Creates a text area field configuration.
+     * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T, rows?: number }} config - The field configuration.
+     * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+     */
+    createTextAreaField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T, rows?: number }): FormItemProps<T> & { render: () => React.ReactNode; } {
         const rules: Rule[] = [];
         if (config.required) {
             rules.push(this.createRequiredRule());
@@ -100,7 +119,12 @@ export class FormFieldBuilder<T extends object> {
         });
     }
 
-    createDateField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }) {
+    /**
+     * Creates a date picker field configuration.
+     * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T }} config - The field configuration.
+     * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+     */
+    createDateField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }): FormItemProps<T> & { render: () => React.ReactNode; } {
         const rules: Rule[] = [];
         if (config.required) {
             rules.push(this.createRequiredRule());
@@ -127,7 +151,12 @@ export class FormFieldBuilder<T extends object> {
         });
     }
 
-    createEmailField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }) {
+    /**
+     * Creates an email input field configuration.
+     * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T }} config - The field configuration.
+     * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+     */
+    createEmailField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }): FormItemProps<T> & { render: () => React.ReactNode; } {
         const rules: Rule[] = [];
         if (config.required) {
             rules.push(this.createRequiredRule("Email is required"));
@@ -154,7 +183,44 @@ export class FormFieldBuilder<T extends object> {
         });
     }
 
-    createPhoneField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }) {
+    /**
+     * Creates an password input field configuration.
+     * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T }} config - The field configuration.
+     * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+     */
+    createPasswordField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }): FormItemProps<T> & { render: () => React.ReactNode; } {
+        const rules: Rule[] = [];
+        if (config.required) {
+            rules.push(this.createRequiredRule("Email is required"));
+        }
+
+        return this.createField({
+            label: config.label,
+            name: config.name as any,
+            rules: [
+                ...rules,
+                {
+                    min: 6,
+                    message: "Password should have at least 6 characters"
+                }
+            ],
+            render: () => (
+                <Input.Password
+                    type="password"
+                    disabled={config.disabled}
+                    placeholder={config.placeholder || "Enter password"}
+                    data-testid={`${String(config.name)}-input`}
+                />
+            )
+        });
+    }
+
+    /**
+     * Creates a phone number input field configuration.
+     * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T }} config - The field configuration.
+     * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+     */
+    createPhoneField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }): FormItemProps<T> & { render: () => React.ReactNode; } {
         const rules: Rule[] = [];
         if (config.required) {
             rules.push(this.createRequiredRule("Phone number is required"));
@@ -180,7 +246,12 @@ export class FormFieldBuilder<T extends object> {
         });
     }
 
-    createURLField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }) {
+    /**
+     * Creates a URL input field configuration.
+     * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T }} config - The field configuration.
+     * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+     */
+    createURLField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }): FormItemProps<T> & { render: () => React.ReactNode; } {
         const rules: Rule[] = [];
         if (config.required) {
             rules.push(this.createRequiredRule("URL is required"));
@@ -206,7 +277,12 @@ export class FormFieldBuilder<T extends object> {
         });
     }
 
-    createSingleCountryField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }) {
+    /**
+     * Creates a single country select field configuration.
+     * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T }} config - The field configuration.
+     * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+     */
+    createSingleCountryField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }): FormItemProps<T> & { render: () => React.ReactNode; } {
         const rules: Rule[] = [];
         if (config.required) {
             rules.push(this.createRequiredRule("Country is required"));
@@ -226,7 +302,12 @@ export class FormFieldBuilder<T extends object> {
         });
     }
 
-    createMultipleCountriesField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }) {
+    /**
+     * Creates a multiple countries select field configuration.
+     * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T }} config - The field configuration.
+     * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+     */
+    createMultipleCountriesField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }): FormItemProps<T> & { render: () => React.ReactNode; } {
         const rules: Rule[] = [];
         if (config.required) {
             rules.push(this.createRequiredRule("At least one country must be selected"));
@@ -249,7 +330,12 @@ export class FormFieldBuilder<T extends object> {
         });
     }
 
-    createCurrencySelect(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }) {
+    /**
+     * Creates a currency select field configuration.
+     * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T }} config - The field configuration.
+     * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+     */
+    createCurrencySelect(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T }): FormItemProps<T> & { render: () => React.ReactNode; } {
         const rules: Rule[] = [];
         if (config.required) {
             rules.push(this.createRequiredRule("Currency is required"));

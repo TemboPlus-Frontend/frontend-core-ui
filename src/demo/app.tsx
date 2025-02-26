@@ -4,6 +4,7 @@
 import React from 'react';
 import { Typography } from 'antd';
 import AmountView from '../components/amount_view';
+import { SampleForm, StructuredForm } from './form';
 
 const { Title } = Typography;
 
@@ -13,6 +14,10 @@ const App: React.FC = () => {
             <Title level={2}>Frontend Core UI Demo</Title>
 
             <AmountView amount={2000} currency='jpy' />
+
+            <SampleForm />
+
+            <StructuredForm />
         </div>
     );
 };
