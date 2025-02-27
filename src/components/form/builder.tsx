@@ -3,6 +3,7 @@ import { Rule } from "antd/es/form";
 import dayjs from "dayjs";
 import { MultipleCountriesSelect, SingleCountrySelect } from "./select";
 import CurrencySelect from "./select/currency_select";
+import { Currency } from "@temboplus/frontend-core";
 
 interface BaseFieldConfig {
     label: string;
@@ -62,11 +63,11 @@ export class FormFieldBuilder<T extends object> {
     }
 
     /**
-     * Creates an amount input field configuration.
+     * Creates a number input field configuration.
      * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T, initialValue?: any }} config - The field configuration.
      * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
      */
-    createAmountField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T, initialValue?: any }): FormItemProps<T> & { render: () => React.ReactNode; } {
+    createNumberField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T, initialValue?: any }): FormItemProps<T> & { render: () => React.ReactNode; } {
         const rules: Rule[] = [];
         if (config.required) {
             rules.push(this.createRequiredRule());
@@ -78,6 +79,7 @@ export class FormFieldBuilder<T extends object> {
             initialValue: config.initialValue,
             rules: [
                 ...rules,
+                { type: "number" }
             ],
             render: () => (
                 <InputNumber
@@ -85,6 +87,47 @@ export class FormFieldBuilder<T extends object> {
                     disabled={config.disabled}
                     placeholder={config.placeholder}
                     data-testid={`${String(config.name)}-input`}
+                />
+            )
+        });
+    }
+
+
+    /**
+         * Creates an amount input field configuration.
+         * @param {Omit<BaseFieldConfig, 'name'> & { name: keyof T, initialValue?: any, currency?: Currency }} config - The field configuration.
+         * @returns {FormItemProps<T> & { render: () => React.ReactNode }} The field configuration with render function.
+         */
+    createAmountField(config: Omit<BaseFieldConfig, 'name'> & { name: keyof T, initialValue?: any, currency?: Currency }): FormItemProps<T> & { render: () => React.ReactNode; } {
+        const rules: Rule[] = [];
+        if (config.required) {
+            rules.push(this.createRequiredRule());
+        }
+
+        const formatter = (value: string | number | undefined) => {
+            return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        };
+
+        const parser = (value: string | undefined) => {
+            return value!.replace(/[^0-9.]/g, '');
+        };
+
+        return this.createField({
+            label: config.label,
+            name: config.name as any,
+            initialValue: config.initialValue,
+            rules: [
+                ...rules,
+            ],
+            render: () => (
+                <InputNumber
+                    prefix={config.currency?.code}
+                    style={{ width: "100%" }}
+                    disabled={config.disabled}
+                    placeholder={config.placeholder}
+                    data-testid={`${String(config.name)}-input`}
+                    formatter={formatter}
+                    parser={parser}
                 />
             )
         });
@@ -232,7 +275,8 @@ export class FormFieldBuilder<T extends object> {
             rules: [
                 ...rules,
                 {
-                    pattern: /^[+]?[\d\s-()]*$/,
+                   // pattern: /^[+]?[\d\s-()]*$/,
+                    pattern: /^\+[1-9]\d{0,2}([-\s]?\d{1,4}){2,4}$/,
                     message: "Please enter a valid phone number"
                 }
             ],

@@ -18,7 +18,7 @@ export const CurrencySelect: React.FC<SelectProps<Currency>> = (props) => {
         getAllCurrencies().map(c => ({
             label: c.name,
             value: c.code,
-            searchText: c.name.toLowerCase() // Pre-compute lowercase for searching
+            searchText: c.code.toLowerCase() + c.name.toLowerCase() // Pre-compute lowercase for searching
         })),
         [] // Empty dependency array since getAllCountries is presumably static
     );
@@ -27,7 +27,7 @@ export const CurrencySelect: React.FC<SelectProps<Currency>> = (props) => {
         if (!input || !option?.label) return false;
 
         const lowerInput = input.toLowerCase();
-        const searchText = option.label.toString().toLowerCase();
+        const searchText = option.searchText.toString().toLowerCase();
 
         return (
             searchText === lowerInput ||           // Exact match

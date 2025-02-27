@@ -31,6 +31,10 @@ export const TemboForm = <T extends object>({
     ...formProps
 }: TemboFormProps<T>) => {
     const layout = formStructure ?? convertToTemboFormLayout(formFields)
+    const submitBtnProps = {
+        loading: submitButtonProps?.loading ?? false,
+        position: submitButtonProps?.position ?? SubmitButtonPosition.BOTTOM_RIGHT
+    } as Required<TemboFormProps["submitButtonProps"]>
 
     return (
         <Form<T>
@@ -49,9 +53,23 @@ export const TemboForm = <T extends object>({
             {/* if header component is not provided, but title is provided */}
             {
                 !header && title && <Header style={titleStyle}>
-                    <Flex vertical align="start" justify="start">
-                        <Typography.Title level={4}>{title}</Typography.Title>
-                        <Typography.Text type={"secondary"}>{description}</Typography.Text>
+                    <Flex justify="space-between" align="end" gap="large">
+                        <Flex vertical align="start" justify="start">
+                            <Typography.Title level={4}>{title}</Typography.Title>
+                            {
+                                description && <Typography.Text type={"secondary"}>{description}</Typography.Text>
+                            }
+                        </Flex>
+                        {
+                            submitBtnProps?.position === SubmitButtonPosition.TOP_RIGHT && (
+                                <SubmitButton
+                                    submitButtonProps={submitButtonProps}
+                                    form={form}
+                                >
+                                    Submit
+                                </SubmitButton>
+                            )
+                        }
                     </Flex>
                 </Header>
             }
@@ -67,10 +85,10 @@ export const TemboForm = <T extends object>({
             }
             {footer}
             {
-                !footer && (
+                !footer && submitBtnProps?.position !== SubmitButtonPosition.TOP_RIGHT && (
                     <div className={getClassNameFromLayout(layout)}>
                         <SubmitButton
-                            submitButtonProps={submitButtonProps}
+                            submitButtonProps={submitBtnProps}
                             form={form}
                         >
                             Submit
@@ -84,7 +102,7 @@ export const TemboForm = <T extends object>({
 
 // Create a new type combining submitButtonProps and form
 export type SubmitButtonProps<T = any> = {
-    submitButtonProps?: TemboFormProps<T>['submitButtonProps'];
+    submitButtonProps: TemboFormProps<T>['submitButtonProps'];
     form?: TemboFormProps<T>['form'];
 };
 
